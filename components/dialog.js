@@ -1,7 +1,7 @@
 /*
  * 对话框组件
  * 使用方法 :
- * dialog({innerHTML:'',layoutId:'',type:''}) 自定义innerHTML等选项
+ * dialog({content:'',innerHTML:'',layoutId:'',type:''}) 自定义innerHTML等选项
  * dialog(document.getElementById('...')) 直接丢一个元素进去
  */
 var dialog = function(option){
@@ -28,7 +28,7 @@ var dialog = function(option){
 	}
 
 	//设置对话框layout样式
-	_temp_dom.style.cssText = 'padding-bottom:30px;display:none;transition:opacity 0.3s;opacity:0;font-family:\'微软雅黑\';width:300px;position:absolute;top:38.2%;left:50%;background-color:#333;border-radius:5px;box-shadow:5px 5px 10px #666;margin-left:-150px;margin-top:'+(document.body.scrollTop-150)+'px;';
+	_temp_dom.style.cssText = 'padding-bottom:30px;display:none;transition:opacity 0.3s;opacity:0;font-family:\'微软雅黑\';width:300px;position:fixed;top:38.2%;left:50%;background-color:#333;border-radius:5px;box-shadow:5px 5px 10px #666;margin-left:-150px;margin-top:-56px;'
 	_temp_dom.style.cssText += ';'+option.cssText;
 
 	//设置对话框innerHTML
@@ -94,7 +94,7 @@ dialog.prototype.hide = function(){
 dialog.prototype.ok = function(){console.log('请自定义「确定」事件')};
 
 //点击取消按钮
-dialog.prototype.cancel = function(){console.log('请自定义「取消」事件')};
+dialog.prototype.cancel = function(){this.hide()};
 
 try{
 	//webpack打包
