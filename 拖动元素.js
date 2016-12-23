@@ -10,7 +10,9 @@ function drag(obj){
 
 	//获取元素实际渲染出来的样式
 	function getstyle(obj,styleName){
-		return obj.currentStyle ? obj.currentStyle[styleName] : obj.ownerDocument.defaultView.getComputedStyle(obj, null)[styleName];
+		return obj.currentStyle ?
+		       obj.currentStyle[styleName] : 
+		       obj.ownerDocument.defaultView.getComputedStyle(obj, null)[styleName];
 	}
 	obj.onmousedown = function(e){
 		if(e.button!=0)return;
