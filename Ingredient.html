@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>食材重量合计</title>
+    <style>
+        .spinner {
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 200px;
+            width: 60px;
+            height: 60px;
+            text-align: center;
+            font-size: 13px;
+            position: relative;
+            font-family: '微软雅黑';
+        }
+
+        .spinner::before {
+            content: '加载中';
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            top: 60px;
+            left: 0;
+            color: #162b96;
+        }
+
+        .spinner > div {
+            background-color: #162b96;
+            height: 100%;
+            width: 6px;
+            display: inline-block;
+            -webkit-animation: stretchdelay 1.2s infinite ease-in-out;
+            animation: stretchdelay 1.2s infinite ease-in-out;
+        }
+
+        .spinner .rect2 {
+            -webkit-animation-delay: -1.1s;
+            animation-delay: -1.1s;
+        }
+
+        .spinner .rect3 {
+            -webkit-animation-delay: -1.0s;
+            animation-delay: -1.0s;
+        }
+
+        .spinner .rect4 {
+            -webkit-animation-delay: -0.9s;
+            animation-delay: -0.9s;
+        }
+
+        .spinner .rect5 {
+            -webkit-animation-delay: -0.8s;
+            animation-delay: -0.8s;
+        }
+
+        @-webkit-keyframes stretchdelay {
+            0%,
+            40%,
+            100% {
+                -webkit-transform: scaleY(0.4)
+            }
+            20% {
+                -webkit-transform: scaleY(1.0)
+            }
+        }
+
+        @keyframes stretchdelay {
+            0%,
+            40%,
+            100% {
+                transform: scaleY(0.4);
+                -webkit-transform: scaleY(0.4);
+            }
+            20% {
+                transform: scaleY(1.0);
+                -webkit-transform: scaleY(1.0);
+            }
+        }
+    </style>
+</head>
+<body>
+<div id="app"></div>
+<div class="spinner" id="wellcome">
+    <div class="rect1"></div>
+    <div class="rect2"></div>
+    <div class="rect3"></div>
+    <div class="rect4"></div>
+    <div class="rect5"></div>
+</div>
+<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-default/index.css">
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        template: `
+            <div style="max-width:300px">
+                <el-input placeholder="请输入重量，然后按Enter键" class="Ingredient" v-for="item in Ingredients" style="margin-bottom:10px">
+                    <template slot="prepend">{{item}}</template>
+                </el-input>
+
+                <el-table
+                  :data="tableData"
+                  style="max-width:300px">
+                  <el-table-column
+                    prop="Ingredient"
+                    label="食材">
+                  </el-table-column>
+                  <el-table-column
+                    prop="weight"
+                    label="总计（g）">
+                  </el-table-column>
+                </el-table>
+            </div>
+        `,
+        data: function () {
+            return {
+                Ingredients: (localStorage.Ingredients && JSON.parse(localStorage.Ingredients)) || [
+                    "猪肉",
+                    "牛肉",
+                    "西蓝花"
+                ],
+                tableData: [],
+            }
+        },
+        beforeMount: function () {
+            //清除等待提示
+            var wellcome = document.querySelector('#wellcome');
+            wellcome.parentNode.removeChild(wellcome);
+        },
+        mounted:function(){
+            var vm = this;
+            [].forEach.call(document.querySelectorAll(".Ingredient"),function(item){
+
+                item.onkeypress = function(event){
+                    var target = event.target;
+                    var value = target.value;
+
+                    if (event.keyCode === 13) {//点击回车
+                        if(+value>0){
+                            vm.addWeight(target.parentNode.querySelector("div").innerHTML,value);
+                            vm.$nextTick(function(){
+                                target.value = '';
+                            });
+                        }
+                    }
+                }
+            });
+        },
+        methods:{
+            addWeight(Ingredient,weight){
+                var hasIngredient = false;
+                this.tableData.forEach(function(item){
+                   if(item.Ingredient===Ingredient){
+                       hasIngredient = true;
+                       item.weight+=parseFloat(weight);
+                   }
+                });
+                if(!hasIngredient){
+                    this.tableData.push({
+                        Ingredient:Ingredient,
+                        weight:+weight
+                    });
+                }
+            }
+        }
+    });
+</script>
+</body>
+</html>
