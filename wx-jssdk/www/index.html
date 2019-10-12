@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>微信JS-SDK</title>
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
+    <script>
+    wx.config({
+        debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+        appId: '%appId', // 必填，公众号的唯一标识
+        timestamp: '%timestamp', // 必填，生成签名的时间戳
+        nonceStr: '%nonceStr', // 必填，生成签名的随机串
+        signature: '%signature',// 必填，签名
+        jsApiList: [
+            'startRecord',
+            'stopRecord',
+            'translateVoice',
+        ] // 必填，需要使用的JS接口列表
+    });
+    </script>
+</head>
+<body>
+    <h1 id="h1"></h1>
+    <button onclick="$event.clickStartRecord()" id="start">开始录音</button>
+    <button onclick="$event.clickStopRecord()" id="stop" style="display:none">结束</button>
+    <script>
+      var $el = {
+          start: document.getElementById('start'),
+          stop: document.getElementById('stop'),
+          h1: document.getElementById('h1'),
+      }
+      var $event = {
+          clickStartRecord: function () {
+              $el.h1.innerHTML = '正在启动录音'
+              wx.startRecord({
+                  success: function () {
+                    $el.h1.innerHTML = '正在录音'
+                    $el.start.style.display = 'none'
+                    $el.stop.style.display = 'block'
+                  }
+              })
+          },
+          clickStopRecord: function () {
+              $el.start.style.display = 'block'
+              $el.stop.style.display = 'none'
+              $el.h1.innerHTML = '正在停止录音'
+              wx.stopRecord({
+                success: function (res) {
+                    var localId = res.localId
+                    $el.h1.innerHTML = '正在识别'
+                    wx.translateVoice({
+                      localId: localId, // 需要识别的音频的本地Id，由录音相关接口获得
+                      isShowProgressTips: 1, // 默认为1，显示进度提示
+                      success: function (res) {
+                        $el.h1.innerHTML = res.translateResult.replace(/。$/, '') // 语音识别的结果
+                      }
+                    })
+                }
+              })
+          }
+      }
+    </script>
+</body>
+</html>
