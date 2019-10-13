@@ -2,10 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, user-scalable='no'">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>微信JS-SDK</title>
     <script src="http://res.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
+    <script src="https://cdn.bootcss.com/eruda/1.5.8/eruda.min.js"></script>
+    <script>eruda.init();</script>
     <script>
     wx.config({
         debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
@@ -20,36 +22,48 @@
         ] // 必填，需要使用的JS接口列表
     });
     </script>
+    <style>
+      *{
+        -webkit-touch-callout:none;  /*系统默认菜单被禁用*/
+        -webkit-user-select:none; /*webkit浏览器*/
+        -khtml-user-select:none; /*早期浏览器*/
+        -moz-user-select:none; /*火狐*/
+        -ms-user-select:none;  /*IE10*/
+        user-select:none;
+      }
+      .button{
+        height:50px;;
+        line-height:50px;
+        border:1px solid #DDD;
+        margin-bottom:30px;
+        padding:10px;
+      }
+      .button:active{
+        background-color: bisque;
+      }
+    </style>
 </head>
 <body>
     <h1 id="h1"></h1>
-    <button onclick="$event.clickStartRecord()" id="start">语音识别</button>
-    <button onclick="$event.clickStopRecord()" id="stop" style="display:none">结束录音</button>
+    <div class="button button1" ontouchstart="$event.clickStartRecord()" ontouchend="$event.clickStopRecord()">语音识别（按住不放录音，松开识别）</div>
+    <div class="button button2" ontouchstart="$event.clickTest()">测试ontouchstart的速度</div>
     <script>
       var $el = {
-          start: document.getElementById('start'),
-          stop: document.getElementById('stop'),
           h1: document.getElementById('h1'),
+          button1: document.querySelector('.button1'),
+          button2: document.querySelector('.button2'),
       }
       var $event = {
+          clickTest () {
+            console.log('ontouchstart')
+          },
           clickStartRecord: function () {
-              $el.h1.innerHTML = '正在启动录音'
-              wx.startRecord({
-                  success: function () {
-                    $el.h1.innerHTML = '正在录音'
-                    $el.start.style.display = 'none'
-                    $el.stop.style.display = 'block'
-                  }
-              })
+              wx.startRecord()
           },
           clickStopRecord: function () {
-              $el.start.style.display = 'block'
-              $el.stop.style.display = 'none'
-              $el.h1.innerHTML = '正在停止录音'
               wx.stopRecord({
                 success: function (res) {
                     var localId = res.localId
-                    $el.h1.innerHTML = '正在识别'
                     wx.translateVoice({
                       localId: localId, // 需要识别的音频的本地Id，由录音相关接口获得
                       isShowProgressTips: 1, // 默认为1，显示进度提示
